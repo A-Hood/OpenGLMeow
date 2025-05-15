@@ -25,7 +25,7 @@ public:
 	void MouseScrollInput(double xoffset, double yoffset);
 
 private:
-
+	// hi
 	int m_ScreenWidth;
 	int m_ScreenHeight;
 
