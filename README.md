@@ -3,7 +3,7 @@
 Working from <link>https://learnopengl.com/</link>. Learning and developing on the base project.
 
 ## Libraries/Includes
-= GLFW
+- GLFW
 - glad
 - glm
 - stb_image
