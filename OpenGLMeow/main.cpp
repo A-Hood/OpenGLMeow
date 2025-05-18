@@ -23,8 +23,8 @@ void mouseInputFunc(GLFWwindow* window, double xpos, double ypos);
 void scrollInputFunc(GLFWwindow* window, double xoffset, double yoffset);
 
 // settings
-const unsigned int SCR_WIDTH = 800;
-const unsigned int SCR_HEIGHT = 600;
+const unsigned int SCR_WIDTH = 1920;
+const unsigned int SCR_HEIGHT = 1080;
 
 float deltaTime = 0.0f;	// Time between current frame and last frame
 float lastFrame = 0.0f; // Time of last frame
@@ -53,8 +53,6 @@ int main()
 		glfwTerminate();
 		return -1;
 	}
-
-	// Load camera
 
 	glfwMakeContextCurrent(window);
 	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
@@ -205,7 +203,7 @@ int main()
 	ourShader.setInt("texture1", 0);
 	ourShader.setInt("texture2", 1);
 
-	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
 	glEnable(GL_DEPTH_TEST);
 	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
@@ -213,7 +211,7 @@ int main()
 	// Load mesh
 	Mesh newMesh("C:/Users/dabpo/Documents/ahhhh.obj");
 	//newMesh.OutputVertices();
-	newMesh.OutputIndices();
+	//newMesh.OutputIndices();
 
 	// render loop
 	// -----------

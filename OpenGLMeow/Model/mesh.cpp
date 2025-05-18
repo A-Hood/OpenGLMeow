@@ -18,12 +18,21 @@ std::vector<std::string> split(std::string line, std::string delimiter) { // fro
 	return splitLine;
 }
 
+
+
 Mesh::Mesh(std::string modelName){
 
 	std::ifstream objFile(modelName);
 	std::string currentText;
 
 	std::vector<glm::vec3> temp_vertices;
+	std::vector<glm::vec2> temp_vertices_uv;
+
+
+	std::vector<unsigned int> temp_indice;
+	std::vector<unsigned int> temp_indice_uv;
+
+
 
 	int numberOfLines = 0;
 
@@ -58,6 +67,14 @@ Mesh::Mesh(std::string modelName){
 				temp_vertices.push_back(glm::vec3(x, y, z));
 			}
 
+			else if (type == "vt")
+			{
+				_stringStream >> x;
+				_stringStream >> y;
+
+				temp_vertices_uv.push_back(glm::vec2(x, y));
+			}
+
 			// read indices
 			else if (type == "f")
 			{
@@ -69,9 +86,12 @@ Mesh::Mesh(std::string modelName){
 
 					line = split(string, "/");
 
-					int indice = std::stoi(line[0]);
+					unsigned int indice = std::stoi(line[0]);
+					unsigned int indice_uv = std::stoi(line[1]);
 
-					indices.push_back(indice);
+					temp_indice.push_back(indice);
+					temp_indice_uv.push_back(indice_uv);
+
 				}
 			}
 		}
@@ -81,15 +101,34 @@ Mesh::Mesh(std::string modelName){
 		std::cout << "File is not good." << std::endl;
 	}
 
-	for (unsigned int i = 0; i < indices.size(); i++) {
-		unsigned int vertexIndex = indices[i];
+
+	// Set geometric vertexes
+	for (unsigned int i = 0; i < temp_indice.size(); i++) {
+		unsigned int vertexIndex = temp_indice[i];
 		glm::vec3 vertex = temp_vertices[vertexIndex - 1];
-		vertices.push_back(vertex);
+		m_Vertices.push_back(vertex);
+	}
+	// Set UV vertexes
+	for (unsigned int i = 0; i < temp_indice_uv.size(); i++) {
+		unsigned int vertexIndexUV = temp_indice_uv[i];
+		glm::vec2 vertex = temp_vertices_uv[vertexIndexUV - 1];
+		m_Vertices_uv.push_back(vertex);
 	}
 
-	isReadyToDraw = true;
-
-
+	// Load into one data file that stores
+	// - Position
+	// - UV
+	// - Normals
+	for (unsigned int i = 0; i < m_Vertices.size(); i++)
+	{
+		// Position
+		m_Data.push_back(m_Vertices[i].x);
+		m_Data.push_back(m_Vertices[i].y);
+		m_Data.push_back(m_Vertices[i].z);
+		// UV
+		m_Data.push_back(m_Vertices_uv[i].x);
+		m_Data.push_back(m_Vertices_uv[i].y);
+	}
 
 	// Create OpenGL Buffers
 	glGenVertexArrays(1, &m_VAO);
@@ -98,12 +137,18 @@ Mesh::Mesh(std::string modelName){
 
 	glBindVertexArray(m_VAO);
 
+	// Position
 	glBindBuffer(GL_ARRAY_BUFFER, m_VBO);
-	glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(glm::vec3), &vertices[0], GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, m_Data.size() * sizeof(float), &m_Data[0], GL_STATIC_DRAW);
 
-	// position attribute
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
 	glEnableVertexAttribArray(0);
+	glEnableVertexAttribArray(1);
+	// Position attribute
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
+	// UV attribute
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
+
+	isReadyToDraw = true;
 }
 
 Mesh::~Mesh(){
@@ -111,20 +156,15 @@ Mesh::~Mesh(){
 
 void Mesh::OutputVertices()
 {
-	for (int i = 0; i < vertices.size() - 1; i++)
-	{
-		//std::cout << vertices[i] << " ";
-	}
-	//std::cout << vertices.size() / 3 << std::endl;
+	std::cout << m_Vertices.size() << std::endl;
 }
 
 void Mesh::OutputIndices()
 {
-	for (int i = 0; i < indices.size() - 1; i++)
-	{
-		std::cout << indices[i] << " ";
-	}
-	//std::cout << indices.size() << std::endl;
+	std::cout << m_Vertices_uv.size() << std::endl;
+
+	std::cout << m_Data.size() << std::endl;
+
 }
 
 void Mesh::Draw()
@@ -132,7 +172,6 @@ void Mesh::Draw()
 	if (isReadyToDraw)
 	{
 		glBindVertexArray(m_VAO);
-		//glDrawElements(GL_LINE, vertices.size(), GL_UNSIGNED_INT, 0);
-		glDrawArrays(GL_TRIANGLES, 0, vertices.size());
+		glDrawArrays(GL_TRIANGLES, 0, m_Data.size());
 	}
 }

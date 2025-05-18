@@ -10,7 +10,6 @@
 #include <glm/glm.hpp>
 #include <GLFW/glfw3.h>
 #include <glm/gtc/matrix_transform.hpp>
-// Add the ability to import meshes/models (preferably .obj files maybe using assimp)
 
 class Mesh {
 public:
@@ -27,13 +26,10 @@ public:
 	unsigned int m_EBO;
 
 private:
+	std::vector<glm::vec3> m_Vertices;
+	std::vector<glm::vec2> m_Vertices_uv;
 
-	glm::vec3 ReadVertices(std::istringstream currentSS);
-	std::vector<glm::vec3> ReadIndices(std::vector<glm::vec3>& i);
-
-private:
-	std::vector<glm::vec3> vertices;
-	std::vector<unsigned int> indices;
+	std::vector<float> m_Data;
 
 	bool isReadyToDraw = false;
 };
