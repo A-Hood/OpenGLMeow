@@ -205,14 +205,14 @@ int main()
 	ourShader.setInt("texture1", 0);
 	ourShader.setInt("texture2", 1);
 
-	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
 	glEnable(GL_DEPTH_TEST);
 	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
 	// Load mesh
-	Mesh newMesh("C:/Users/dabpo/Pictures/sphereagain.obj");
-	newMesh.OutputVertices();
+	Mesh newMesh("C:/Users/dabpo/Documents/ahhhh.obj");
+	//newMesh.OutputVertices();
 	newMesh.OutputIndices();
 
 	// render loop
@@ -249,18 +249,17 @@ int main()
 		ourShader.setMat4("projection", projection); // note: currently we set the projection matrix each frame, but since the projection matrix rarely changes it's often best practice to set it outside the main loop only once.
 		ourShader.setMat4("view", view);
 
+
 		glm::mat4 model = glm::mat4(1.0f);
+		model = glm::translate(model, glm::vec3(0, 0, -5));
 		ourShader.setMat4("model", model);
 		newMesh.Draw();
-
 		// render boxes
 		/*
-		glBindVertexArray(VAO);
 		for (unsigned int i = 0; i < 10; i++)
 		{
 			// calculate the model matrix for each object and pass it to shader before drawing
 
-			glDrawArrays(GL_TRIANGLES, 0, 36);
 		}
 		*/
 		// glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)

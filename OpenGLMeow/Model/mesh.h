@@ -27,8 +27,12 @@ public:
 	unsigned int m_EBO;
 
 private:
-	//std::vector<glm::vec3> vertices;
-	std::vector<float> vertices;
+
+	glm::vec3 ReadVertices(std::istringstream currentSS);
+	std::vector<glm::vec3> ReadIndices(std::vector<glm::vec3>& i);
+
+private:
+	std::vector<glm::vec3> vertices;
 	std::vector<unsigned int> indices;
 
 	bool isReadyToDraw = false;

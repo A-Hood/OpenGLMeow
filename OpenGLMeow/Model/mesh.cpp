@@ -2,7 +2,7 @@
 #include <ios>
 
 #include <cstddef>
-std::vector<std::string> split(std::string line, std::string delimiter) {
+std::vector<std::string> split(std::string line, std::string delimiter) { // from GetIntoGameDev
 
 	std::vector<std::string> splitLine;
 
@@ -23,6 +23,8 @@ Mesh::Mesh(std::string modelName){
 	std::ifstream objFile(modelName);
 	std::string currentText;
 
+	std::vector<glm::vec3> temp_vertices;
+
 	int numberOfLines = 0;
 
 	// check if file is open
@@ -39,40 +41,38 @@ Mesh::Mesh(std::string modelName){
 		std::string type;
 
 		unsigned int currentIndice = 0;
+
+		// read line, dependant on type read vertex/indices
 		while (std::getline(objFile, currentText))
 		{
 			std::istringstream _stringStream(currentText);
 			_stringStream >> type;
 
-			// TODO: function that loads vertexes (geometric only for now)
+			// read vertex
 			if (type == "v")
 			{
 				_stringStream >> x;
 				_stringStream >> y;
 				_stringStream >> z;
 
-				//glm::vec3 test = glm::vec3(x, y, z);
-
-				vertices.push_back(x);
-				vertices.push_back(y);
-				vertices.push_back(z);
+				temp_vertices.push_back(glm::vec3(x, y, z));
 			}
 
-			// TODO: function that loads indices (geometric only for now)
-			if (type == "f")
+			// read indices
+			else if (type == "f")
 			{
 				std::string string;
-				_stringStream >> string;
-				std::vector<std::string> line;
+				for (int i = 0; i < 3; i++)
+				{
+					_stringStream >> string;
+					std::vector<std::string> line;
 
-				line = split(string, "/");
+					line = split(string, "/");
 
-				int indice = std::stoi(line[0]);
-				indices.push_back(indice);
-				//glm::vec3 pos = vertices2[indice - 1];
+					int indice = std::stoi(line[0]);
 
-				//std::cout << pos[0] << std::endl;
-				//vertices.push_back(pos[0]);
+					indices.push_back(indice);
+				}
 			}
 		}
 	}
@@ -81,7 +81,15 @@ Mesh::Mesh(std::string modelName){
 		std::cout << "File is not good." << std::endl;
 	}
 
+	for (unsigned int i = 0; i < indices.size(); i++) {
+		unsigned int vertexIndex = indices[i];
+		glm::vec3 vertex = temp_vertices[vertexIndex - 1];
+		vertices.push_back(vertex);
+	}
+
 	isReadyToDraw = true;
+
+
 
 	// Create OpenGL Buffers
 	glGenVertexArrays(1, &m_VAO);
@@ -91,16 +99,11 @@ Mesh::Mesh(std::string modelName){
 	glBindVertexArray(m_VAO);
 
 	glBindBuffer(GL_ARRAY_BUFFER, m_VBO);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), &vertices, GL_STATIC_DRAW);
-
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_EBO);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), &indices, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(glm::vec3), &vertices[0], GL_STATIC_DRAW);
 
 	// position attribute
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
 	glEnableVertexAttribArray(0);
-
-	glBindVertexArray(0);
 }
 
 Mesh::~Mesh(){
@@ -108,20 +111,20 @@ Mesh::~Mesh(){
 
 void Mesh::OutputVertices()
 {
-	//for (int i = 0; i < vertices.size() - 1; i++)
-	//{
-		//std::cout << vertices[i] << std::endl;
-	//}
-	std::cout << vertices.size() / 3 << std::endl;
+	for (int i = 0; i < vertices.size() - 1; i++)
+	{
+		//std::cout << vertices[i] << " ";
+	}
+	//std::cout << vertices.size() / 3 << std::endl;
 }
 
 void Mesh::OutputIndices()
 {
-	//for (int i = 0; i < indices.size() - 1; i++)
-	//{
-		//std::cout << indices[i] << std::endl;
-	//}
-	std::cout << indices.size() << std::endl;
+	for (int i = 0; i < indices.size() - 1; i++)
+	{
+		std::cout << indices[i] << " ";
+	}
+	//std::cout << indices.size() << std::endl;
 }
 
 void Mesh::Draw()
@@ -129,8 +132,7 @@ void Mesh::Draw()
 	if (isReadyToDraw)
 	{
 		glBindVertexArray(m_VAO);
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_EBO);
-		glDrawElements(GL_TRIANGLES, vertices.size() - 1, GL_UNSIGNED_INT, 0);
-		//glDrawArrays(GL_POLYGON, 0, vertices.size() - 1);
+		//glDrawElements(GL_LINE, vertices.size(), GL_UNSIGNED_INT, 0);
+		glDrawArrays(GL_TRIANGLES, 0, vertices.size());
 	}
 }
