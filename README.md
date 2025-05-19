@@ -7,3 +7,4 @@ Working from <link>https://learnopengl.com/</link>. Learning and developing on t
 - glad
 - glm
 - stb_image
+- assimp
