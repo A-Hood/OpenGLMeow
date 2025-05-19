@@ -21,6 +21,8 @@ public:
 	void OutputVertices();
 	void OutputIndices();
 
+	void DeleteBuffers();
+public:
 	unsigned int m_VAO;
 	unsigned int m_VBO;
 	unsigned int m_EBO;

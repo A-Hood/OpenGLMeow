@@ -175,3 +175,10 @@ void Mesh::Draw()
 		glDrawArrays(GL_TRIANGLES, 0, m_Data.size());
 	}
 }
+
+void Mesh::DeleteBuffers()
+{
+	glDeleteVertexArrays(1, &m_VAO);
+	glDeleteBuffers(1, &m_VBO);
+	glDeleteBuffers(1, &m_EBO);
+}

@@ -33,6 +33,9 @@ Shader::Shader(const char* vertexPath, const char* fragmentPath)
 	const char* vShaderCode = vertexCode.c_str();
 	const char* fShaderCode = fragmentCode.c_str();
 
+	std::cout << vShaderCode << std::endl;
+	std::cout << fShaderCode << std::endl;
+
 	// 2. compile shaders
 	unsigned int vertex, fragment;
 	int success;
